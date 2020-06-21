@@ -1,11 +1,12 @@
 import telnetlib
 import csv
 from socket import gaierror
+import socket
 
 
 def read_file(addr):
     x = []
-    with open(addr) as f:
+    with open(addr, 'r') as f:
         csv_reader = csv.DictReader(f)
         for row in csv_reader:
             x.append(row)
@@ -25,11 +26,21 @@ def cred(data):
 
 def connection(ip, name, pwd, x):
     try:
-        print(ip[x], name[x], pwd[x])
-        tn = telnetlib.Telnet(ip[x])
-        print('Connection to ' + ip[x] + ' OK.')
-        tn.close()
-        print('Connection to ' + ip[x] + ' close.')
+        try:
+            tn = telnetlib.Telnet(ip[x], timeout=1)
+            print("Connection to " + ip[x] + " OK.")
+            if name[x] is None:
+                pass
+            else:
+                tn.read_until(b"Username : ")
+                tn.write(name[x] + "\n")
+                tn.read_until(b"Password : ")
+                tn.write(pwd[x] + "\r\n")
+                tn.write("\n")
+            tn.close()
+            print("Connection to " + ip[x] + " close.")
+        except socket.timeout:
+            print("Connection to " + ip[x] + " time out.")
     except gaierror as e:
         print(ip[x], e)
 
