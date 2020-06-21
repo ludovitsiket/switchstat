@@ -23,21 +23,26 @@ def cred(data):
     return (ip, name, pwd)
 
 
+def connection(ip, name, pwd, x):
+    try:
+        print(ip[x], name[x], pwd[x])
+        tn = telnetlib.Telnet(ip[x])
+        print('Connection to ' + ip[x] + ' OK.')
+        tn.close()
+        print('Connection to ' + ip[x] + ' close.')
+    except gaierror as e:
+        print(ip[x], e)
+
+
 def telnet_conn(data):
     try:
         ip, name, pwd = cred(data)
         x = 0
         while x < len(data):
-            print(ip[x], name[x], pwd[x])
-            tn = telnetlib.Telnet(ip[x])
-            print('Connection to ' + ip[x] + ' OK.')
-            tn.close()
-            print('Connection to ' + ip[x] + ' close.')
+            connection(ip, name, pwd, x)
             x += 1
     except (KeyboardInterrupt, FileNotFoundError) as e:
         print(e)
-    except gaierror as e:
-        print(ip[x], e)
 
 
 def main():
